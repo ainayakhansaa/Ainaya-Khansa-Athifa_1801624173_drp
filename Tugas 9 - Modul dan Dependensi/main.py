@@ -1,5 +1,6 @@
-from tools import *
-from manager.database_manager import create_database, tambah_entry, load_history, update_entry, delete_entry
+import os
+
+from manager.database_manager import create_database, tambah_entry, load_history, update_entry, delete_entry, export_json, import_json
 
 def welcome():
     while True:
@@ -40,7 +41,9 @@ def tampilkan_menu():
     print("6. 💬 Motivasi Hari Ini")
     print("7. ✏️ Edit Mood")
     print("8. 🗑️ Hapus Mood")
-    print("9. 🚪 Keluar")
+    print("9. Export JSON")
+    print("10. Import JSON")
+    print("11. 🚪 Keluar")
     print("=" * 55)
 
 
@@ -316,6 +319,23 @@ def hapus_mood():
     print("🗑️ Data mood berhasil dihapus!")
 
 
+def impor_json_ke_db():
+
+    print("\n=== IMPORT JSON ===")
+
+    nama_file = input("Masukkan nama file JSON (tekan Enter untuk data/mood_history.json): ").strip()
+
+    if not nama_file:
+        nama_file = "data/mood_history.json"
+
+    if not os.path.exists(nama_file):
+        print(f"❌ File '{nama_file}' tidak ditemukan.")
+        return
+
+    import_json(nama_file)
+    print("✅ Data berhasil diimpor ke database!")
+
+
 def main():
 
     # Membuat database SQLite jika belum ada
@@ -329,7 +349,7 @@ def main():
 
         tampilkan_menu()
 
-        pilihan = input("Pilih menu (1-9): ")
+        pilihan = input("Pilih menu (1-11): ")
 
         if pilihan == "1":
             input_mood()
@@ -356,6 +376,12 @@ def main():
             hapus_mood()
 
         elif pilihan == "9":
+            export_json()
+
+        elif pilihan == "10":
+            impor_json_ke_db()
+
+        elif pilihan == "11":
             print("\nTerima kasih telah menggunakan PsyMood 😊")
             print("Semoga harimu menyenangkan!")
             break

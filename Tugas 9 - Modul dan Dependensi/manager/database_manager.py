@@ -4,14 +4,22 @@ database_manager.py
 Mengelola database SQLite untuk aplikasi PsyMood.
 """
 
+import os
 import sqlite3
+import json
 from datetime import datetime
 
-DATABASE = "database/psymood.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+DATABASE = os.path.join(PROJECT_ROOT, "database", "psymood.db")
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+JSON_FILE = os.path.join(DATA_DIR, "mood_history.json")
 
 
 def create_database():
     """Membuat database dan tabel jika belum ada."""
+
+    os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
 
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
@@ -125,3 +133,49 @@ def delete_entry(id):
 
     conn.commit()
     conn.close()
+
+
+def export_json():
+    """
+    Mengekspor seluruh data mood ke file JSON.
+    """
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    history = load_history()
+    with open(JSON_FILE, "w", encoding="utf-8") as file:
+        json.dump(history, file, indent=4, ensure_ascii=False)
+
+    print(f"✅ Data berhasil diekspor ke {JSON_FILE}")
+
+
+def import_json(filename=None):
+    if filename is None:
+        filename = JSON_FILE
+
+    if not os.path.exists(filename):
+        raise FileNotFoundError(f"File '{filename}' tidak ditemukan.")
+
+    with open(filename, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    imported_count = 0
+    for item in data:
+        cursor.execute("""
+            INSERT INTO mood_history (mood, skor, tanggal, waktu)
+            VALUES (?, ?, ?, ?)
+        """, (
+            item["mood"],
+            item["skor"],
+            item["tanggal"],
+            item["waktu"]
+        ))
+        imported_count += 1
+
+    conn.commit()
+    conn.close()
+
+    print(f"✅ Berhasil mengimpor {imported_count} data dari {filename}")
+    return imported_count
