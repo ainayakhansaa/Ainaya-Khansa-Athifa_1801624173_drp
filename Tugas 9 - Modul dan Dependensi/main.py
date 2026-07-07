@@ -27,25 +27,25 @@ def welcome():
 
 
 def tampilkan_menu():
-    print("\n" + "=" * 50)
-    print("              MENU UTAMA PSYMOOD")
-    print("=" * 50)
-    print("1. Input Mood Harian")
-    print("2. Lihat Riwayat Mood")
-    print("3. Analisis Mood")
-    print("4. Cek Level Stres")
-    print("5. Stress Relief Guide")
-    print("6. Motivasi Hari Ini")
-    print("7. Keluar")
-    print("=" * 50)
+    print("\n" + "=" * 55)
+    print("                 MENU UTAMA PSYMOOD")
+    print("=" * 55)
+    print("1. 😊 Input Mood Harian")
+    print("2. 📜 Lihat Riwayat Mood")
+    print("3. 📊 Analisis Mood")
+    print("4. 😟 Cek Level Stres")
+    print("5. 🌿 Stress Relief Guide")
+    print("6. 💬 Motivasi Hari Ini")
+    print("7. 🚪 Keluar")
+    print("=" * 55)
 
 
 def main():
 
-    if not welcome():
-        return
+    welcome()
 
     while True:
+
         tampilkan_menu()
 
         pilihan = input("Pilih menu (1-7): ")
@@ -70,11 +70,13 @@ def main():
 
         elif pilihan == "7":
             print("\nTerima kasih telah menggunakan PsyMood 😊")
-            print("Sampai jumpa dan semoga harimu menyenangkan!")
+            print("Semoga harimu menyenangkan!")
             break
 
         else:
-            print("\nPilihan tidak valid. Silakan coba lagi.")
+            print("\n❌ Pilihan tidak valid.")
+
+        input("\nTekan Enter untuk kembali ke menu...")
 
 
 if __name__ == "__main__":
