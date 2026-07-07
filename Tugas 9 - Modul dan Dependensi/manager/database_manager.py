@@ -1,67 +1,127 @@
 """
 database_manager.py
 
-Mengelola penyimpanan dan pembacaan data mood pengguna
-menggunakan file JSON.
+Mengelola database SQLite untuk aplikasi PsyMood.
 """
 
-import json
-import os
+import sqlite3
 from datetime import datetime
 
-# Lokasi file database
-DATA_FILE = "data/mood_history.json"
+DATABASE = "database/psymood.db"
+
+
+def create_database():
+    """Membuat database dan tabel jika belum ada."""
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS mood_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mood TEXT NOT NULL,
+            skor INTEGER NOT NULL,
+            tanggal TEXT NOT NULL,
+            waktu TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def tambah_entry(mood, skor):
+    
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    sekarang = datetime.now()
+
+    tanggal = sekarang.strftime("%d-%m-%Y")
+    waktu = sekarang.strftime("%H:%M")
+
+    cursor.execute("""
+        INSERT INTO mood_history (mood, skor, tanggal, waktu)
+        VALUES (?, ?, ?, ?)
+    """, (mood, skor, tanggal, waktu))
+
+    conn.commit()
+
+    data = {
+        "id": cursor.lastrowid,
+        "mood": mood,
+        "skor": skor,
+        "tanggal": tanggal,
+        "waktu": waktu
+    }
+
+    conn.close()
+
+    return data
 
 
 def load_history():
     """
-    Membaca seluruh riwayat mood.
-    Mengembalikan list.
+    Mengambil seluruh data mood dari database.
     """
 
-    if not os.path.exists(DATA_FILE):
-        return []
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
 
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as file:
-            data = json.load(file)
+    cursor.execute("""
+        SELECT id, mood, skor, tanggal, waktu
+        FROM mood_history
+        ORDER BY id DESC
+    """)
 
-            if isinstance(data, list):
-                return data
+    rows = cursor.fetchall()
 
-            return []
+    conn.close()
 
-    except (json.JSONDecodeError, FileNotFoundError):
-        return []
+    history = []
+
+    for row in rows:
+        history.append({
+            "id": row[0],
+            "mood": row[1],
+            "skor": row[2],
+            "tanggal": row[3],
+            "waktu": row[4]
+        })
+
+    return history
 
 
-def save_history(data):
+def update_entry(id, mood, skor):
     """
-    Menyimpan seluruh data ke file JSON.
+    Mengubah data mood berdasarkan ID.
     """
 
-    with open(DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
 
+    cursor.execute("""
+        UPDATE mood_history
+        SET mood = ?, skor = ?
+        WHERE id = ?
+    """, (mood, skor, id))
 
-def tambah_entry(mood, skor):
+    conn.commit()
+    conn.close()
+
+def delete_entry(id):
     """
-    Menambahkan satu data mood baru.
+    Menghapus data mood berdasarkan ID.
     """
 
-    history = load_history()
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
 
-    sekarang = datetime.now()
+    cursor.execute("""
+        DELETE FROM mood_history
+        WHERE id = ?
+    """, (id,))
 
-    entry = {
-        "tanggal": sekarang.strftime("%d-%m-%Y"),
-        "waktu": sekarang.strftime("%H:%M"),
-        "mood": mood,
-        "skor": skor
-    }
-
-    history.append(entry)
-
-    save_history(history)
-
-    return entry
+    conn.commit()
+    conn.close()
