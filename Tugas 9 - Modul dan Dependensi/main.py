@@ -2,6 +2,7 @@ import os
 
 from manager.database_manager import create_database, tambah_entry, load_history, update_entry, delete_entry, export_json, import_json
 from manager.mood_analysis import analisis_mood
+from manager.mapreduce import map_reduce_mood
 
 def welcome():
     while True:
@@ -44,7 +45,8 @@ def tampilkan_menu():
     print("8. 🗑️ Hapus Mood")
     print("9. Export JSON")
     print("10. Import JSON")
-    print("11. 🚪 Keluar")
+    print("11. MapReduce Mood")
+    print("12. 🚪 Keluar")
     print("=" * 55)
 
 
@@ -350,7 +352,7 @@ def main():
 
         tampilkan_menu()
 
-        pilihan = input("Pilih menu (1-11): ")
+        pilihan = input("Pilih menu (1-12): ")
 
         if pilihan == "1":
             input_mood()
@@ -381,8 +383,11 @@ def main():
 
         elif pilihan == "10":
             impor_json_ke_db()
-
+        
         elif pilihan == "11":
+            map_reduce_mood()
+
+        elif pilihan == "12":
             print("\nTerima kasih telah menggunakan PsyMood 😊")
             print("Semoga harimu menyenangkan!")
             break
