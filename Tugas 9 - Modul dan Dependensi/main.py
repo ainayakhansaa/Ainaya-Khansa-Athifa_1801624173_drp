@@ -1,6 +1,7 @@
 import os
 
 from manager.database_manager import create_database, tambah_entry, load_history, update_entry, delete_entry, export_json, import_json
+from manager.mood_analysis import analisis_mood
 
 def welcome():
     while True:

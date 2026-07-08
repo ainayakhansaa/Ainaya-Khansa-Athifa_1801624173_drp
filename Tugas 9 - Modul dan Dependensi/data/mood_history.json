@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "id": 2,
+        "mood": "seneng",
+        "skor": 8,
+        "tanggal": "08-07-2026",
+        "waktu": "11:18"
+    },
+    {
+        "id": 1,
+        "mood": "sedih",
+        "skor": 5,
+        "tanggal": "08-07-2026",
+        "waktu": "11:18"
+    }
+]
